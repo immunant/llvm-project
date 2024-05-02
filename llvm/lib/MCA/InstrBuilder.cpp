@@ -269,6 +269,10 @@ static void computeMaxLatency(InstrDesc &ID, const MCInstrDesc &MCDesc,
 }
 
 static Error verifyOperands(const MCInstrDesc &MCDesc, const MCInst &MCI) {
+  if (MCI.getNumOperands() < MCDesc.getNumOperands()) {
+    return make_error<InstructionError<MCInst>>(
+        "Decoded instruction is missing operands.", MCI);
+  }
   // Count register definitions, and skip non register operands in the process.
   unsigned I, E;
   unsigned NumExplicitDefs = MCDesc.getNumDefs();

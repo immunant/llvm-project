@@ -66,6 +66,7 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Compiler.h"
+#include "llvm/Support/Debug.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"
 #include <algorithm>
@@ -73,6 +74,8 @@
 #include <cstdint>
 #include <iterator>
 #include <utility>
+
+#define DEBUG_TYPE "aarch64-fastisel"
 
 using namespace llvm;
 
@@ -2137,6 +2140,18 @@ bool AArch64FastISel::emitStore(MVT VT, unsigned SrcReg, Address Addr,
   MachineInstrBuilder MIB =
       BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, MIMD, II).addReg(SrcReg);
   addLoadStoreOperands(Addr, MIB, MachineMemOperand::MOStore, ScaleFactor, MMO);
+
+  //bool sp_relative = Addr.isFIBase();
+  //bool reg_offset = !Addr.getOffsetReg();
+  //if (!sp_relative) {
+  //    const MCInstrDesc &II2 = TII.get(AArch64::EXTRXrri);
+  //    MachineInstrBuilder MIB2 = BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, MIMD, II2);
+  //    MIB2.addReg(Addr.getReg()).addReg(Addr.getReg()).addReg(AArch64::X18).addImm(56);
+
+  //    const MCInstrDesc &II3 = TII.get(AArch64::EXTRXrri);
+  //    MachineInstrBuilder MIB3 = BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, MIMD, II3);
+  //    MIB3.addReg(Addr.getReg()).addReg(Addr.getReg()).addReg(Addr.getReg()).addImm(8);
+  //}
 
   return true;
 }

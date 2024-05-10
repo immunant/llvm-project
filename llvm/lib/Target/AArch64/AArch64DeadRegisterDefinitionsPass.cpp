@@ -116,7 +116,36 @@ static bool atomicReadDroppedOnZero(unsigned Opcode) {
 void AArch64DeadRegisterDefinitions::processMachineBasicBlock(
     MachineBasicBlock &MBB) {
   const MachineFunction &MF = *MBB.getParent();
-  for (MachineInstr &MI : MBB) {
+  for (MachineBasicBlock::iterator II = MBB.begin(), E = MBB.end(); II != E; ++II) {
+      MachineInstr &MI = *II;
+  //for (MachineInstr &MI : MBB) {
+    if (
+        (MI.getOpcode() == AArch64::STRWui)) {
+        //(MI.getOpcode() == AArch64::STRWroW) ||
+        //(MI.getOpcode() == AArch64::STRWroX) ||
+        //(MI.getOpcode() == AArch64::STRWpre) ||
+        //(MI.getOpcode() == AArch64::STRWpost)) {
+
+      //MBB.setInstr(MI);
+      //auto it = MBB.getInsertPt()++;
+      //auto it = MI.getIterator();
+      const MCInstrDesc &EXTRII = TII->get(AArch64::EXTRWrri);
+
+      auto op = MI.getOperand(1);
+      if (op.isReg()) {
+          auto reg = op.getReg();
+          MachineInstrBuilder MIB2 = BuildMI(MBB, MI, MI.getDebugLoc(), EXTRII);
+          MIB2.addReg(reg).addReg(reg).addReg(AArch64::X18).addImm(56);
+
+          //it++;
+          MachineInstrBuilder MIB3 = BuildMI(MBB, MI, MI.getDebugLoc(), EXTRII);
+          MIB3.addReg(reg).addReg(reg).addReg(reg).addImm(4);
+          II = MIB3;
+          II++;
+          Changed = true;
+          continue;
+      }
+    }
     if (usesFrameIndex(MI)) {
       // We need to skip this instruction because while it appears to have a
       // dead def it uses a frame index which might expand into a multi

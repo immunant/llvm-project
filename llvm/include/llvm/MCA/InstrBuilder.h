@@ -77,6 +77,8 @@ class InstrBuilder {
   // Using `MCSchedModel::LoadLatency` for load instructions.
   bool UseLoadLatency;
 
+  unsigned CallLatency;
+
   Expected<const InstrDesc &> createInstrDescImpl(const MCInst &MCI,
                                                   bool &Static);
   Expected<const InstrDesc &> getOrCreateInstrDesc(const MCInst &MCI,
@@ -106,6 +108,10 @@ public:
 
   void useLoadLatency(bool Enable = true) {
     UseLoadLatency = Enable;
+  }
+
+  void setCallLatency(unsigned NumCycles) {
+      CallLatency = NumCycles;
   }
 
   Expected<std::unique_ptr<Instruction>> createInstruction(const MCInst &MCI);

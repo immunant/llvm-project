@@ -33,7 +33,8 @@ InstrBuilder::InstrBuilder(const llvm::MCSubtargetInfo &sti,
                            const llvm::MCInstrAnalysis *mcia)
     : STI(sti), MCII(mcii), MRI(mri), MCIA(mcia), FirstCallInst(true),
       FirstReturnInst(true),
-      UseLoadLatency(false) {
+      UseLoadLatency(false),
+      CallLatency(100U) {
   const MCSchedModel &SM = STI.getSchedModel();
   ProcResourceMasks.resize(SM.getNumProcResourceKinds());
   computeProcResourceMasks(STI.getSchedModel(), ProcResourceMasks);
@@ -251,11 +252,12 @@ static void initializeUsedResources(InstrDesc &ID,
 static void computeMaxLatency(InstrDesc &ID, const MCInstrDesc &MCDesc,
                               const MCSchedClassDesc &SCDesc,
                               const MCSubtargetInfo &STI,
-                              bool UseLoadLatency) {
+                              bool UseLoadLatency,
+                              unsigned CallLatency) {
   if (MCDesc.isCall()) {
     // We cannot estimate how long this call will take.
-    // Artificially set an arbitrarily high latency (100cy).
-    ID.MaxLatency = 100U;
+    // Artificially set an arbitrarily high latency (100cy) unless provided by user.
+    ID.MaxLatency = CallLatency;
     return;
   }
 
@@ -595,7 +597,8 @@ InstrBuilder::createInstrDescImpl(const MCInst &MCI, bool &StaticDesc) {
     // We don't correctly model calls.
     WithColor::warning() << "found a call in the input assembly sequence.\n";
     WithColor::note() << "call instructions are not correctly modeled. "
-                      << "Assume a latency of 100cy.\n";
+                      << "Assume a latency of " << CallLatency << "cy.\n";
+                       
     FirstCallInst = false;
   }
 
@@ -614,7 +617,7 @@ InstrBuilder::createInstrDescImpl(const MCInst &MCI, bool &StaticDesc) {
   ID->RetireOOO = SCDesc.RetireOOO;
 
   initializeUsedResources(*ID, SCDesc, STI, ProcResourceMasks);
-  computeMaxLatency(*ID, MCDesc, SCDesc, STI, UseLoadLatency);
+  computeMaxLatency(*ID, MCDesc, SCDesc, STI, UseLoadLatency, CallLatency);
 
   if (Error Err = verifyOperands(MCDesc, MCI))
     return std::move(Err);

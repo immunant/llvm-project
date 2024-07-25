@@ -5,7 +5,7 @@ mkdir -p build
 cd build
 cmake -GNinja -DLLVM_ENABLE_PROJECTS="clang" \
     -DLLVM_TARGETS_TO_BUILD="AArch64" \
-    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-linux-gnu" \
     ../llvm
 ninja clang

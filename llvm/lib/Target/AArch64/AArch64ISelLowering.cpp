@@ -10463,7 +10463,10 @@ getRegisterByName(const char* RegName, LLT VT, const MachineFunction &MF) const 
     unsigned DwarfRegNum = MRI->getDwarfRegNum(Reg, false);
     if (!Subtarget->isXRegisterReserved(DwarfRegNum) &&
         !MRI->isReservedReg(MF, Reg))
-      Reg = 0;
+      report_fatal_error(
+          Twine("Register \"" + StringRef(RegName) +
+                "\" is not reserved! Did you forget to pass -ffixed-" +
+                StringRef(RegName) + "?"));
   }
   if (Reg)
     return Reg;

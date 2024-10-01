@@ -47,9 +47,13 @@ AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
       StoreInst *SI = dyn_cast<StoreInst>(&*I);
       LoadInst *LI = dyn_cast<LoadInst>(&*I);
       if (LI || SI) {
+        Value *Pointer = SI ? SI->getPointerOperand() : LI->getPointerOperand();
+        if (AllocaInst *AI = dyn_cast<AllocaInst>(Pointer)) {
+          continue;
+        }
+
         IRBuilder<> IRB(&*I);
         Value *ReadX18 = readRegister(IRB, "x18");
-        Value *Pointer = SI ? SI->getPointerOperand() : LI->getPointerOperand();
         Value *PtrToInt = IRB.CreatePtrToInt(Pointer, IntptrTy, "makeint");
 
         Value *And = IRB.CreateAnd(ReadX18, TopEightBitsSet, "andhighbitmask");

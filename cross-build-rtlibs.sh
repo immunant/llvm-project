@@ -5,8 +5,12 @@ set -x
 mkdir -p build-rtlibs
 cd build-rtlibs
 ls -l /usr/lib/gcc/aarch64-linux-gnu
-find /usr | fgrep crtbeginS.o
-cross_flags="-B/usr/lib/gcc/aarch64-linux-gnu/14.1.0/ --sysroot=/usr/aarch64-linux-gnu -isystem /usr/aarch64-linux-gnu/include --rtlib=compiler-rt -march=armv8+memtag -ffixed-x18"
+find /usr/lib | fgrep crtbeginS.o
+crt_candidates="$(ls -d /usr/lib/gcc/aarch64-linux-gnu/*)
+$(ls -d /usr/lib/gcc-cross/aarch64-linux-gnu/*)"
+crt_dir=$(echo $crt_candidates | sort -V | tail -n1)
+
+cross_flags="-B$crt_dir --sysroot=/usr/aarch64-linux-gnu --gcc-install-dir=$crt_dir -isystem /usr/aarch64-linux-gnu/include --rtlib=compiler-rt -march=armv8+memtag -ffixed-x18"
 #--sysroot=/usr/aarch64-linux-gnu/ --gcc-install-dir=/usr/lib/gcc/aarch64-linux-gnu/14.1.0
 export LDFLAGS="-L/usr/aarch64-linux-gnu/lib"
 cmake -GNinja -DLLVM_TARGETS_TO_BUILD="AArch64" -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-linux-gnu" \

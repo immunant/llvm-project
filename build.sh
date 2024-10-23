@@ -13,3 +13,5 @@ cmake -GNinja -DLLVM_ENABLE_PROJECTS="clang" \
     -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-linux-gnu" \
     ../llvm
 ninja clang builtins
+# copy to expected target triple
+cp -arv lib/clang/19/lib/aarch64-linux-gnu lib/clang/19/lib/aarch64-unknown-linux-gnu

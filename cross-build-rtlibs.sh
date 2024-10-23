@@ -19,7 +19,7 @@ crt_candidates="$(ls -d /usr/lib/gcc/aarch64-linux-gnu/*)
 $(ls -d /usr/lib/gcc-cross/aarch64-linux-gnu/*)"
 crt_dir=$(echo $crt_candidates | sort -V | tail -n1)
 
-cross_flags="-B$fake_crt_dir -B$crt_dir --gcc-toolchain=/usr --gcc-triple=aarch64-linux-gnu -v -isystem /usr/aarch64-linux-gnu/include -march=armv8+memtag -ffixed-x18"
+cross_flags="-B$fake_crt_dir -B$crt_dir --gcc-toolchain=/usr --gcc-triple=aarch64-linux-gnu -isystem /usr/aarch64-linux-gnu/include -march=armv8+memtag -ffixed-x18"
 #--sysroot=/usr/aarch64-linux-gnu/ --gcc-install-dir=/usr/lib/gcc/aarch64-linux-gnu/14.1.0
 export LDFLAGS="-L/usr/aarch64-linux-gnu/lib"
 cmake -GNinja -DLLVM_TARGETS_TO_BUILD="AArch64" -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-linux-gnu" \

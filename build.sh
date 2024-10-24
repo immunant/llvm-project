@@ -21,5 +21,23 @@ for file in lib/libclangStaticAnalyzerCheckers.a lib/libclangCodeGen.a lib/libcl
 	rm $file.bak
 done
 ninja builtins
+# free up disk space by deleting binaries that aren't needed once builtins are built
+unused_progs=(clang-tblgen
+llvm-ar
+llvm-min-tblgen
+llvm-nm
+llvm-objcopy
+llvm-objdump
+llvm-ranlib
+llvm-readelf
+llvm-readobj
+llvm-size
+llvm-strip
+llvm-symbolizer
+llvm-tblgen
+sancov)
+for prog in $unused_progs; do
+	rm bin/$prog
+done
 # copy to expected target triple
 cp -arv lib/clang/19/lib/aarch64-linux-gnu lib/clang/19/lib/aarch64-unknown-linux-gnu

@@ -34,6 +34,7 @@ cmake -GNinja -DLLVM_TARGETS_TO_BUILD="AArch64" -DLLVM_DEFAULT_TARGET_TRIPLE="aa
     -DLLVM_ENABLE_RUNTIMES='libcxx;libcxxabi;compiler-rt;libunwind' \
     ../runtimes
 ninja
+find include
 cd compiler-rt/lib/linux
 # rename CRT files to expected filenames
 cp -a clang_rt.crtend-aarch64.o crtendS.o

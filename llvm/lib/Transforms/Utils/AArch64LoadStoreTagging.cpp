@@ -71,5 +71,5 @@ AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
   }
   // return true;
 
-  return PreservedAnalyses::all();
+  return PreservedAnalyses::none();
 }

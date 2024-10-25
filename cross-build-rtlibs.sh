@@ -4,7 +4,7 @@
 set -x
 mkdir -p build-rtlibs
 cd build-rtlibs
-cross_flags="--sysroot=/usr/aarch64-linux-gnu/ --gcc-install-dir=/usr/lib/gcc/aarch64-linux-gnu/14.1.0 --rtlib=compiler-rt -march=armv8+memtag -ffixed-x18"
+cross_flags="-B/usr/lib/gcc/aarch64-linux-gnu/14.1.0/ --sysroot=/usr/aarch64-linux-gnu -isystem /usr/aarch64-linux-gnu/include --rtlib=compiler-rt -march=armv8+memtag -ffixed-x18"
 export LDFLAGS="-L/usr/aarch64-linux-gnu/lib"
 cmake -GNinja -DLLVM_TARGETS_TO_BUILD="AArch64" -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-linux-gnu" \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \

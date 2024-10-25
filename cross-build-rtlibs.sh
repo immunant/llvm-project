@@ -1,6 +1,7 @@
 #!/bin/sh
 # build compiler-rt, libcxx, libcxxabi, and libunwind with our patched clang
 # see https://llvm.org/docs/HowToCrossCompileBuiltinsOnArm.html
+set -x
 mkdir -p build-rtlibs
 cd build-rtlibs
 cross_flags="--sysroot=/usr/aarch64-linux-gnu/ --gcc-install-dir=/usr/lib/gcc/aarch64-linux-gnu/14.1.0 --rtlib=compiler-rt -march=armv8+memtag -ffixed-x18"

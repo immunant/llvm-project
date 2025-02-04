@@ -143,6 +143,7 @@ HIDDEN(___aarch64_have_lse_atomics)
 
 #ifdef L_cas
 DEFINE_COMPILERRT_OUTLINE_FUNCTION_UNMANGLED(NAME(cas))
+        orr x2, x2, x18
         JUMP_IF_NOT_LSE 8f
 #if SIZE < 16
 #ifdef HAS_ASM_LSE
@@ -203,6 +204,7 @@ END_COMPILERRT_OUTLINE_FUNCTION(NAME(cas))
 #define SWP .inst 0x38208020 + B + N
 #endif
 DEFINE_COMPILERRT_OUTLINE_FUNCTION_UNMANGLED(NAME(swp))
+        orr x1, x1, x18
         JUMP_IF_NOT_LSE 8f
         SWP    // s(0), s(0), [x1]
         ret
@@ -247,6 +249,7 @@ END_COMPILERRT_OUTLINE_FUNCTION(NAME(swp))
 #endif
 
 DEFINE_COMPILERRT_OUTLINE_FUNCTION_UNMANGLED(NAME(LDNM))
+        orr x1, x1, x18
         JUMP_IF_NOT_LSE 8f
         LDOP // s(0), s(0), [x1]
         ret

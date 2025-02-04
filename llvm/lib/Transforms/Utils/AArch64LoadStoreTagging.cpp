@@ -39,7 +39,7 @@ AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
   Type *IntptrTy = IRB.getIntPtrTy(DL);
   Type *PtrTy = IRB.getPtrTy();
 
-  auto *TopEightBitsSet = ConstantInt::get(IntptrTy, 0xff00'0000'0000'0000);
+  auto *TopEightBitsClear = ConstantInt::get(IntptrTy, 0x00ff'ffff'ffff'ffff);
 
   for (Function::iterator BB = F.begin(), BBE = F.end(); BB != BBE; ++BB) {
     BasicBlock &B = *BB;
@@ -56,8 +56,8 @@ AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
         Value *ReadX18 = readRegister(IRB, "x18");
         Value *PtrToInt = IRB.CreatePtrToInt(Pointer, IntptrTy, "makeint");
 
-        Value *And = IRB.CreateAnd(ReadX18, TopEightBitsSet, "andhighbitmask");
-        Value *Or = IRB.CreateOr(PtrToInt, And, "ortag");
+        Value *And = IRB.CreateAnd(PtrToInt, TopEightBitsClear, "andhighbitmask");
+        Value *Or = IRB.CreateOr(ReadX18, And, "ortag");
 
         Value *IntToPtrInst = IRB.CreateIntToPtr(Or, PtrTy, "makeptr");
         if (SI) {

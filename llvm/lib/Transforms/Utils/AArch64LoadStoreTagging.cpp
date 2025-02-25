@@ -46,8 +46,17 @@ AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
     for (BasicBlock::iterator I = B.begin(), IE = B.end(); I != IE; ++I) {
       StoreInst *SI = dyn_cast<StoreInst>(&*I);
       LoadInst *LI = dyn_cast<LoadInst>(&*I);
-      if (LI || SI) {
-        Value *Pointer = SI ? SI->getPointerOperand() : LI->getPointerOperand();
+      AtomicCmpXchgInst *CASI = dyn_cast<AtomicCmpXchgInst>(&*I);
+      if (LI || SI || CASI) {
+        Value *Pointer;
+        if (SI) {
+            Pointer = SI->getPointerOperand();
+        } else if (LI) {
+            Pointer = LI->getPointerOperand();
+        } else {
+            assert(CASI);
+            Pointer = CASI->getPointerOperand();
+        }
         if (AllocaInst *AI = dyn_cast<AllocaInst>(Pointer)) {
           continue;
         }
@@ -62,6 +71,8 @@ AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
         Value *IntToPtrInst = IRB.CreateIntToPtr(Or, PtrTy, "makeptr");
         if (SI) {
           SI->setOperand(SI->getPointerOperandIndex(), IntToPtrInst);
+        } else if (CASI) {
+          CASI->setOperand(CASI->getPointerOperandIndex(), IntToPtrInst);
         } else {
           assert(LI);
           LI->setOperand(LI->getPointerOperandIndex(), IntToPtrInst);

@@ -31,7 +31,7 @@ Value *readRegister(IRBuilder<> &IRB, StringRef Name) {
 
 PreservedAnalyses
 AArch64LoadStoreTaggingPass::run(Function &F, FunctionAnalysisManager &AM) {
-  errs() << "instrumenting AArch64 loads/stores in " << F.getName() << "\n";
+  // errs() << "instrumenting AArch64 loads/stores in " << F.getName() << "\n";
 
   IRBuilder<> IRB(F.getContext());
   Module *M = F.getParent();
